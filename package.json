@@ -1,0 +1,19 @@
+{
+  "name": "kofak",
+  "version": "1.0.0",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "server-start": "cd apps/server && node index.ts"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^5.1.0",
+    "mongodb": "^6.17.0",
+    "pidusage": "^4.0.1",
+    "ps-list": "^8.1.1"
+  },
+  "devDependencies": {
+    "nodemo": "^1.0.0"
+  }
+}
