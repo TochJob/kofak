@@ -1,6 +1,15 @@
 import UserModel from "./models/User.ts";
 import bcrypt from "bcrypt";
 import { validationResult } from "express-validator";
+import jwt from "jsonwebtoken";
+import config from "./config.ts";
+
+import type { ObjectId } from "mongodb";
+
+function generateAccessToken(id: ObjectId): string {
+  const payload = { id };
+  return jwt.sign(payload, config.secret, { expiresIn: "24h" });
+}
 
 class AuthController {
   async registration(req, res) {
@@ -42,20 +51,25 @@ class AuthController {
   }
   async login(req, res) {
     try {
+      const { username, password } = req.body;
+      const user = await UserModel.findOne({ username });
+      if (!user) {
+        return res.status(400).json({
+          message: "User not found",
+        });
+      }
+      const validPassword = await bcrypt.compare(password, user.password);
+      if (!validPassword) {
+        return res.status(400).json({
+          message: "Invalid password",
+        });
+      }
+      const token = generateAccessToken(user._id);
+      return res.json({ token, userId: user._id, username: user.username });
     } catch (error) {
       console.log(error);
       res.status(400).json({
         message: "Login error",
-      });
-    }
-  }
-  async getUsers(req, res) {
-    try {
-      res.json('{"message": "Users list"}');
-    } catch (error) {
-      console.log(error);
-      res.status(400).json({
-        message: "Error while getting users",
       });
     }
   }
