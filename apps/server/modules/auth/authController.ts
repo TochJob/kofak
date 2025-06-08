@@ -2,6 +2,7 @@ import bcrypt from "bcrypt";
 import { validationResult } from "express-validator";
 import jwt from "jsonwebtoken";
 
+import type { Request, Response } from "express";
 import type { ObjectId } from "mongodb";
 
 import UserModel from "./models/User.ts";
@@ -13,7 +14,7 @@ function generateAccessToken(id: ObjectId): string {
 }
 
 class AuthController {
-  async registration(req, res) {
+  async registration(req: Request, res: Response) {
     try {
       const errors = validationResult(req);
       if (!errors.isEmpty()) {
@@ -50,7 +51,7 @@ class AuthController {
       });
     }
   }
-  async login(req, res) {
+  async login(req: Request, res: Response) {
     try {
       const { username, password } = req.body;
       const user = await UserModel.findOne({ username });
@@ -69,7 +70,7 @@ class AuthController {
       return res.json({ token, userId: user._id, username: user.username });
     } catch (error) {
       console.log(error);
-      res.status(400).json({
+      return res.status(400).json({
         message: "Login error",
       });
     }
