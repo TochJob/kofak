@@ -1,6 +1,6 @@
 import { Router } from "express";
-import authController from "./authController.ts";
 import { check } from "express-validator";
+import authController from "./authController.ts";
 
 const router = new Router();
 
@@ -14,6 +14,7 @@ router.post(
   ],
   authController.registration
 );
+
 router.post("/login", authController.login);
 
 export default router;

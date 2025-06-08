@@ -1,10 +1,11 @@
-import UserModel from "./models/User.ts";
 import bcrypt from "bcrypt";
 import { validationResult } from "express-validator";
 import jwt from "jsonwebtoken";
-import config from "./config.ts";
 
 import type { ObjectId } from "mongodb";
+
+import UserModel from "./models/User.ts";
+import config from "../../config.ts";
 
 function generateAccessToken(id: ObjectId): string {
   const payload = { id };

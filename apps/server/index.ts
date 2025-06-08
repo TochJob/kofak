@@ -1,7 +1,8 @@
 import express from "express";
 import mongoose from "mongoose";
 
-import authRouter from "./authRouter.ts";
+import authRouter from "./modules/auth/authRouter.ts";
+import processRouter from "./modules/process/processRouter.ts";
 
 const DB_URL =
   "mongodb+srv://admin:admin@cluster0.efkoc0g.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0";
@@ -10,7 +11,11 @@ const PORT = 5000;
 
 const app = express();
 
-app.use(express.json()).use("/auth", authRouter);
+app
+  .use(express.json())
+  .use("/auth", authRouter)
+  .use("/processes", processRouter);
+
 async function startApp() {
   try {
     await mongoose.connect(DB_URL);
