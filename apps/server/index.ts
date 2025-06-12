@@ -1,5 +1,6 @@
 import express from "express";
 import mongoose from "mongoose";
+import cors from "cors";
 
 import authRouter from "./modules/auth/authRouter.ts";
 import processRouter from "./modules/process/processRouter.ts";
@@ -9,10 +10,14 @@ const DB_URL =
 
 const PORT = 5000;
 
-const app = express();
+const app = express({
+  origin: "http://localhost:5173",
+  credentials: true,
+});
 
 app
   .use(express.json())
+  .use(cors())
   .use("/auth", authRouter)
   .use("/processes", processRouter);
 
