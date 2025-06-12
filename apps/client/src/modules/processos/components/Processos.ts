@@ -1,18 +1,15 @@
 export class ProcessosList extends HTMLElement {
   constructor() {
     super();
-    this.attachShadow({ mode: "open" });
     this.render();
   }
 
   connectedCallback() {}
 
   render() {
-    if (!this.shadowRoot) return;
-
     const stylePath = new URL("./style.css", import.meta.url).href;
 
-    this.shadowRoot.innerHTML = `
+    this.innerHTML = `
           <link rel="stylesheet" href="${stylePath}">
           
           <div class="auth-container">

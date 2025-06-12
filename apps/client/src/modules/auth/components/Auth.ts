@@ -1,5 +1,7 @@
 import API_URL_LIST from "@/api/api.config.ts";
 
+import type { LoginResponse } from "./typos.ts";
+
 console.log("apiLogin", API_URL_LIST.apiLogin);
 
 export class AuthBlock extends HTMLElement {
@@ -64,8 +66,7 @@ export class AuthBlock extends HTMLElement {
           throw new Error("Login failed");
         }
 
-        const data = await response.json();
-        console.log("Login successful:", data);
+        const data: LoginResponse = await response.json();
 
         this.dispatchEvent(
           new CustomEvent("login-success", {
