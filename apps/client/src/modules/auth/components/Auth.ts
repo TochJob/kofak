@@ -2,13 +2,9 @@ import API_URL_LIST from "@/api/api.config.ts";
 
 import type { LoginResponse } from "./typos.ts";
 
-console.log("apiLogin", API_URL_LIST.apiLogin);
-
 export class AuthBlock extends HTMLElement {
   constructor() {
     super();
-    // this.attachShadow({ mode: "open" });
-    // this.render();
   }
 
   connectedCallback() {
