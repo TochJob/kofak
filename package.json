@@ -15,8 +15,7 @@
     "jsonwebtoken": "^9.0.2",
     "mongodb": "^6.17.0",
     "mongoose": "^8.15.1",
-    "pidusage": "^4.0.1",
-    "ps-list": "^8.1.1"
+    "systeminformation": "^5.27.1"
   },
   "devDependencies": {
     "nodemo": "^1.0.0",
