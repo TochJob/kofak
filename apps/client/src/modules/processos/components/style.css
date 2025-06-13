@@ -1,0 +1,37 @@
+.processos-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.processos-list__item {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  padding: 10px;
+  border-bottom: 1px solid #ccc;
+}
+
+.processos-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 10px;
+}
+
+.processos-header {
+  display: contents;
+  font-weight: bold;
+}
+
+.processos-body {
+  display: contents;
+}
+
+.processos-row {
+  display: contents;
+}
+
+.processos-cell {
+  padding: 10px;
+  border: 1px solid #ddd;
+  text-align: center;
+}
