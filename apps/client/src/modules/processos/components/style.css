@@ -1,37 +1,21 @@
-.processos-list {
-  display: flex;
-  flex-direction: column;
+.processos-table__header {
+  background: var(--header-background);
+  color: var(--text-color);
+}
+.processos-table__header th {
+  padding: 0.2em 0.5rem;
+  border-radius: 0.5rem 0.5rem 0 0;
+}
+.processos-table__header th:first-child {
+  text-align: left;
 }
 
-.processos-list__item {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  padding: 10px;
-  border-bottom: 1px solid #ccc;
+.processos-table__item {
+  background: var(--cell-background);
+  color: var(--text-color);
 }
 
-.processos-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
-  gap: 10px;
-}
-
-.processos-header {
-  display: contents;
-  font-weight: bold;
-}
-
-.processos-body {
-  display: contents;
-}
-
-.processos-row {
-  display: contents;
-}
-
-.processos-cell {
-  padding: 10px;
-  border: 1px solid #ddd;
-  text-align: center;
+.processos-table__item:first-child {
+  text-align: left;
+  padding-left: 0.5rem;
 }

@@ -65,21 +65,19 @@ export class ProcessosList extends HTMLElement {
     const tableHtml = sortedData
       ? `
         <table class="processos-table">
-          <thead>
-            <tr>
+          <thead  class="processos-table__header">
               ${this.renderHeader("name", "Name")}
               ${this.renderHeader("cpu", "CPU")}
               ${this.renderHeader("mem", "MEM")}
-            </tr>
           </thead>
-          <tbody>
+          <tbody  class="processos-table__body">
             ${sortedData
               .map(
                 (p) => `
-                <tr>
-                  <td>${p.name}</td>
-                  <td>${p.cpu}</td>
-                  <td>${p.mem}</td>
+                <tr class="processos-table__row">
+                  <td class="processos-table__item">${p.name}</td>
+                  <td class="processos-table__item">${p.cpu}</td>
+                  <td class="processos-table__item">${p.mem}</td>
                 </tr>
               `
               )
@@ -91,7 +89,7 @@ export class ProcessosList extends HTMLElement {
 
     this.innerHTML = `
       <link rel="stylesheet" href="${stylePath}">
-      <div class="auth-container">
+      <div class="">
         <h2>Список процессов</h2>
         ${tableHtml}
       </div>
