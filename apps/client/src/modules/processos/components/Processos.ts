@@ -9,7 +9,10 @@ export class ProcessosList extends HTMLElement {
     sortKey: null as keyof ProcessosItemType | null,
     sortAsc: true,
   };
-
+  constructor() {
+    super();
+    this.render();
+  }
   private state = new Proxy(this._state, {
     set: (target, prop, value) => {
       Reflect.set(target, prop, value);
@@ -17,11 +20,6 @@ export class ProcessosList extends HTMLElement {
       return true;
     },
   });
-
-  constructor() {
-    super();
-    this.render();
-  }
 
   async connectedCallback() {
     try {
@@ -34,8 +32,9 @@ export class ProcessosList extends HTMLElement {
 
       if (!response.ok) throw new Error("Fetch failed");
 
-      const data: ProcessosListType = await response.json();
-      this.state.processosData = data.list;
+      const data: ProcessosItemType[] = await response.json();
+      this.state.processosData = data;
+      console.log("  this.state.processosData", this.state.processosData);
     } catch (error) {
       console.error("Fetch error:", error);
     }
@@ -54,6 +53,9 @@ export class ProcessosList extends HTMLElement {
 
           const isNumber =
             typeof aValue === "number" && typeof bValue === "number";
+
+          console.log("isNumber", isNumber);
+
           const result = isNumber
             ? (aValue as number) - (bValue as number)
             : String(aValue).localeCompare(String(bValue));
@@ -96,8 +98,6 @@ export class ProcessosList extends HTMLElement {
     `;
 
     this.querySelectorAll("th[data-sort]").forEach((th) => {
-      console.log(123);
-
       th.addEventListener("click", () => {
         const key = th.getAttribute("data-sort") as keyof ProcessosItemType;
         if (!key) return;
