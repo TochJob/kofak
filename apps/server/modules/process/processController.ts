@@ -9,8 +9,8 @@ class ProcessController {
       const filterdProcesses = allProcesses.list.map((p) => ({
         pid: p.pid,
         name: p.name,
-        cpu: Number(p.cpu.toFixed(1)),
-        mem: Number((p.mem * 100).toFixed(1)),
+        cpu: Number(p.cpu.toFixed(2)),
+        mem: Number((p.mem * 100).toFixed(2)),
       }));
       return res.json(filterdProcesses);
     } catch (error) {

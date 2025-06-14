@@ -1,6 +1,22 @@
+.main {
+  height: 90vh;
+  overflow: hidden;
+}
+
+.processos-table {
+  min-width: 375px;
+  max-height: 75vh;
+  overflow-y: auto;
+  display: block;
+  border-collapse: collapse;
+}
+
 .processos-table__header {
   background: var(--header-background);
   color: var(--text-color);
+  position: sticky;
+  top: 0;
+  z-index: 1;
 }
 .processos-table__header th {
   padding: 0.2em 0.5rem;
