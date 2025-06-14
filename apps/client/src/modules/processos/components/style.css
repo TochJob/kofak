@@ -21,6 +21,11 @@
 .processos-table__header th {
   padding: 0.2em 0.5rem;
   border-radius: 0.5rem 0.5rem 0 0;
+  cursor: pointer;
+  transition: background-color 0.3s ease-in-out;
+}
+.processos-table__header th:hover {
+  background: var(--header-hover-background);
 }
 .processos-table__header th:first-child {
   text-align: left;
