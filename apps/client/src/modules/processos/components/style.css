@@ -34,6 +34,10 @@
 .processos-table__item {
   background: var(--cell-background);
   color: var(--text-color);
+  transition: background-color 0.3s ease-in-out;
+}
+.processos-table__item:hover {
+  background: var(--header-hover-background);
 }
 
 .processos-table__item:first-child {
