@@ -1,18 +1,22 @@
 import API_URL_LIST from "@/api/api.config.ts";
-import type { ProcessosListType, ProcessosItemType } from "./typos";
+import type { ProcessosItemType } from "./typos";
 
 const { apiGetProcessos } = API_URL_LIST;
 
 export class ProcessosList extends HTMLElement {
+  private intervalId: number | undefined;
+
   private _state = {
     processosData: null as ProcessosItemType[] | null,
     sortKey: null as keyof ProcessosItemType | null,
     sortAsc: true,
   };
+
   constructor() {
     super();
     this.render();
   }
+
   private state = new Proxy(this._state, {
     set: (target, prop, value) => {
       Reflect.set(target, prop, value);
@@ -22,72 +26,70 @@ export class ProcessosList extends HTMLElement {
   });
 
   async connectedCallback() {
-    try {
-      const response = await fetch(apiGetProcessos, {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
+    const fetchAndUpdate = async () => {
+      try {
+        const response = await fetch(apiGetProcessos, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
 
-      if (!response.ok) throw new Error("Fetch failed");
+        if (!response.ok) throw new Error("Fetch failed");
 
-      const data: ProcessosItemType[] = await response.json();
-      this.state.processosData = data;
-      console.log("  this.state.processosData", this.state.processosData);
-    } catch (error) {
-      console.error("Fetch error:", error);
-    }
+        const newData: ProcessosItemType[] = await response.json();
+        if (!Array.isArray(newData)) return;
+
+        this._state.processosData = newData;
+        const sorted = this.getSortedData(newData);
+        this.updateDOMWithNewData(sorted);
+      } catch (error) {
+        console.error("Fetch error:", error);
+      } finally {
+        this.intervalId = window.setTimeout(fetchAndUpdate, 500);
+      }
+    };
+
+    await fetchAndUpdate();
   }
 
-  render() {
+  disconnectedCallback() {
+    if (this.intervalId) clearTimeout(this.intervalId);
+  }
+
+  private getSortedData(data: ProcessosItemType[]): ProcessosItemType[] {
+    const { sortKey, sortAsc } = this.state;
+
+    return [...data].sort((a, b) => {
+      if (!sortKey) return 0;
+
+      const aVal = a[sortKey];
+      const bVal = b[sortKey];
+      const isNumber = typeof aVal === "number" && typeof bVal === "number";
+
+      const result = isNumber
+        ? (aVal as number) - (bVal as number)
+        : String(aVal).localeCompare(String(bVal));
+
+      return sortAsc ? result : -result;
+    });
+  }
+
+  private render() {
     const stylePath = new URL("./style.css", import.meta.url).href;
-    const { processosData, sortKey, sortAsc } = this.state;
 
-    const sortedData = processosData
-      ? [...processosData].sort((a, b) => {
-          if (!sortKey) return 0;
-
-          const aValue = a[sortKey];
-          const bValue = b[sortKey];
-
-          const isNumber =
-            typeof aValue === "number" && typeof bValue === "number";
-
-          console.log("isNumber", isNumber);
-
-          const result = isNumber
-            ? (aValue as number) - (bValue as number)
-            : String(aValue).localeCompare(String(bValue));
-
-          return sortAsc ? result : -result;
-        })
-      : null;
-
-    const tableHtml = sortedData
-      ? `
+    const tableHtml = `
         <table class="processos-table">
-          <thead  class="processos-table__header">
+          <thead class="processos-table__header">
+            <tr>
               ${this.renderHeader("name", "Name")}
               ${this.renderHeader("cpu", "CPU")}
               ${this.renderHeader("mem", "MEM")}
+            </tr>
           </thead>
-          <tbody  class="processos-table__body">
-            ${sortedData
-              .map(
-                (p) => `
-                <tr class="processos-table__row">
-                  <td class="processos-table__item">${p.name}</td>
-                  <td class="processos-table__item">${p.cpu}</td>
-                  <td class="processos-table__item">${p.mem}</td>
-                </tr>
-              `
-              )
-              .join("")}
-          </tbody>
+          <tbody class="processos-table__body"></tbody>
         </table>
-    `
-      : "<p>Loading <span>...</span></p>";
+      `;
 
     this.innerHTML = `
       <link rel="stylesheet" href="${stylePath}">
@@ -105,14 +107,65 @@ export class ProcessosList extends HTMLElement {
         const isSame = this.state.sortKey === key;
         this.state.sortKey = key;
         this.state.sortAsc = isSame ? !this.state.sortAsc : true;
+
+        const sorted = this.getSortedData(this._state.processosData || []);
+        this.updateDOMWithNewData(sorted);
       });
     });
   }
 
-  renderHeader(key: keyof ProcessosItemType, label: string) {
+  private renderHeader(key: keyof ProcessosItemType, label: string) {
     const active = this.state.sortKey === key;
     const arrow = active ? (this.state.sortAsc ? "↑" : "↓") : "";
     return `<th data-sort="${key}">${label} ${arrow}</th>`;
+  }
+
+  private updateDOMWithNewData(data: ProcessosItemType[]) {
+    let tbody = this.querySelector(".processos-table__body");
+    if (!tbody) return;
+
+    const existingRows = new Map<number, HTMLTableRowElement>();
+
+    Array.from(tbody.querySelectorAll("tr")).forEach((row) => {
+      const pidAttr = row.getAttribute("data-pid");
+      if (pidAttr) {
+        const pid = parseInt(pidAttr);
+        if (!isNaN(pid)) existingRows.set(pid, row);
+      }
+    });
+
+    const usedPids = new Set<number>();
+
+    tbody.innerHTML = "";
+
+    data.forEach((proc) => {
+      const { pid, name, cpu, mem } = proc;
+      usedPids.add(pid);
+      const cpuStr = cpu.toFixed(1);
+      const memStr = mem.toFixed(1);
+
+      const existing = existingRows.get(pid);
+      let row: HTMLTableRowElement;
+
+      if (existing) {
+        row = existing;
+        const [nameCell, cpuCell, memCell] = row.children;
+        if (nameCell.textContent !== name) nameCell.textContent = name;
+        if (cpuCell.textContent !== cpuStr) cpuCell.textContent = cpuStr;
+        if (memCell.textContent !== memStr) memCell.textContent = memStr;
+      } else {
+        row = document.createElement("tr");
+        row.classList.add("processos-table__row");
+        row.setAttribute("data-pid", String(pid));
+        row.innerHTML = `
+          <td class="processos-table__item">${name}</td>
+          <td class="processos-table__item">${cpuStr}</td>
+          <td class="processos-table__item">${memStr}</td>
+        `;
+      }
+
+      tbody.appendChild(row);
+    });
   }
 }
 
