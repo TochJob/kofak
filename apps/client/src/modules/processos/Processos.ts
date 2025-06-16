@@ -98,7 +98,6 @@ export class ProcessosList extends HTMLElement {
     socket.onmessage = (event) => {
       try {
         const data = JSON.parse(event.data);
-        console.log("data", data);
 
         if (data.type === "processes" && Array.isArray(data.body)) {
           const newData: ProcessosItemType[] = data.body;

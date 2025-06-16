@@ -11,13 +11,11 @@ export function setupWebSocket(server: http.Server) {
   wss = new WebSocketServer({ server });
 
   wss.on("connection", (ws) => {
-    console.log("WebSocket connected");
     ws.send(JSON.stringify({ message: "Connect ready" }));
 
     ws.on("message", (data) => {
       try {
         const message = JSON.parse(data.toString());
-        console.log("message", message);
 
         if (typeof message?.body?.interval === "number") {
           const intervalMessage: ClientMeta = message;
