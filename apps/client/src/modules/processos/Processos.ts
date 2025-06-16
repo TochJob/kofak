@@ -41,7 +41,11 @@ export class ProcessosList extends HTMLElement {
   openTableVisible() {
     const table = document.querySelector("#table-wrapper") as HTMLElement;
     const loader = document.querySelector("#loader") as HTMLElement;
+    const interval = document.querySelector(
+      "#selector-interval"
+    ) as HTMLElement;
     if (table) table.classList.remove("hidden");
+    if (interval) interval.classList.remove("hidden");
     if (loader) loader.classList.add("hidden");
   }
 
@@ -166,7 +170,7 @@ export class ProcessosList extends HTMLElement {
       `;
 
     const intervalControlHtml = `
-      <label class="update-interval-label">
+      <label id="selector-interval" class="hidden update-interval-label">
         Udpdate interval: 
         <select id="interval-selector">
           ${intervalOptionsHtml}
