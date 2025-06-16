@@ -4,8 +4,8 @@
   "type": "module",
   "main": "index.js",
   "scripts": {
-    "server-start": "cd apps/server && ts-node index.ts",
-    "client-start": "cd apps/client && npm run dev"
+    "server": "cd apps/server && ts-node index.ts",
+    "client": "cd apps/client && npm run dev"
   },
   "dependencies": {
     "bcrypt": "^6.0.0",
