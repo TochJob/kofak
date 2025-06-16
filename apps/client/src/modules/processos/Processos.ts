@@ -45,13 +45,42 @@ export class ProcessosList extends HTMLElement {
 
   async connectedCallback() {
     const socket = new WebSocket(apiGetProcessosWS);
+    const intervalSelector = this.querySelector(
+      "#interval-selector"
+    ) as HTMLSelectElement;
+
+    intervalSelector?.addEventListener("change", () => {
+      const interval = Number(intervalSelector.value);
+
+      if (socket.readyState === WebSocket.OPEN) {
+        socket.send(
+          JSON.stringify({
+            type: "set_interval",
+            body: { interval },
+          })
+        );
+        localStorage.setItem("processos_interval", String(interval));
+      }
+    });
+
+    socket.onopen = () => {
+      const initialInterval =
+        Number(localStorage.getItem("processos_interval")) || 2000;
+      socket.send(
+        JSON.stringify({
+          type: "set_interval",
+          body: { interval: initialInterval },
+        })
+      );
+    };
 
     socket.onmessage = (event) => {
       try {
         const data = JSON.parse(event.data);
+        console.log("data", data);
 
-        if (data.type === "processes" && Array.isArray(data.payload)) {
-          const newData: ProcessosItemType[] = data.payload;
+        if (data.type === "processes" && Array.isArray(data.body)) {
+          const newData: ProcessosItemType[] = data.body;
 
           this._state.processosData = newData;
           const sorted = this.getSortedData(newData);
@@ -91,6 +120,12 @@ export class ProcessosList extends HTMLElement {
     });
   }
 
+  private renderHeader(key: keyof ProcessosItemType, label: string) {
+    const active = this.state.sortKey === key;
+    const arrow = active ? (this.state.sortAsc ? "↑" : "↓") : "";
+    return `<th data-sort="${key}">${label} ${arrow}</th>`;
+  }
+
   private render() {
     const stylePath = new URL("./style.css", import.meta.url).href;
 
@@ -107,10 +142,25 @@ export class ProcessosList extends HTMLElement {
         </table>
       `;
 
+    const intervalControlHtml = `
+      <label class="update-interval-label">
+        Udpdate interval: 
+        <select id="interval-selector">
+          <option value="1000">1 sec</option>
+          <option value="2000" selected>2 sec</option>
+          <option value="5000">5 sec</option>
+          <option value="10000">10 sec</option>
+        </select>
+      </label>
+    `;
+
     this.innerHTML = `
       <link rel="stylesheet" href="${stylePath}">
       <div class="main">
-        <h2 class="page-header">Processes list</h2>
+        <div class="main-header__wrapper">
+          <h2 class="page-header">Processes list</h2>
+          ${intervalControlHtml}
+        </div>
         <div id="table-wrapper" class="hidden">${tableHtml}</div>
         <div class="loader" id="loader"></div>
       </div>
@@ -130,12 +180,6 @@ export class ProcessosList extends HTMLElement {
         this.updateHeaderSortIndicators();
       });
     });
-  }
-
-  private renderHeader(key: keyof ProcessosItemType, label: string) {
-    const active = this.state.sortKey === key;
-    const arrow = active ? (this.state.sortAsc ? "↑" : "↓") : "";
-    return `<th data-sort="${key}">${label} ${arrow}</th>`;
   }
 
   private updateDOMWithNewData(data: ProcessosItemType[]) {

@@ -3,6 +3,14 @@
   overflow: hidden;
 }
 
+.main-header__wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.5rem;
+  gap: 1rem;
+}
+
 .processos-table {
   min-width: 375px;
   max-height: 75vh;
