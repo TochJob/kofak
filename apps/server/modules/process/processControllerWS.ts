@@ -38,29 +38,32 @@ export function setupWebSocket(server: http.Server) {
   });
 
   function startProcessBroadcasting() {
+    async function broadcatOnece() {
+      if (!wss) return;
+      let filtered: ReturnType<typeof mapProcessList> = [];
+
+      try {
+        const allProcesses = await si.processes();
+        filtered = mapProcessList(allProcesses.list);
+      } catch (e) {
+        console.error("Error fetching processes:", e);
+      }
+
+      const message = JSON.stringify({ type: "processes", body: filtered });
+
+      wss.clients.forEach((client) => {
+        if (client.readyState === 1) client.send(message);
+      });
+    }
+
     function scheduleNextTick() {
       setTimeout(async () => {
-        if (!wss) return;
-
-        let filtered: ReturnType<typeof mapProcessList> = [];
-
-        try {
-          const allProcesses = await si.processes();
-          filtered = mapProcessList(allProcesses.list);
-        } catch (e) {
-          console.error("Error fetching processes:", e);
-        }
-
-        const message = JSON.stringify({ type: "processes", body: filtered });
-
-        wss.clients.forEach((client) => {
-          if (client.readyState === 1) client.send(message);
-        });
-
+        await broadcatOnece();
         scheduleNextTick();
       }, currentInterval);
     }
 
+    broadcatOnece();
     scheduleNextTick();
   }
 
