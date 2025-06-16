@@ -1,24 +1,28 @@
 import express from "express";
 import cors from "cors";
-
-import processRouter from "./modules/process/processRouter.ts";
+import http from "http";
+import { setupWebSocket } from "./modules/process/processControllerWS.ts";
 
 const PORT = 5000;
 
-const app = express({
-  origin: "http://localhost:5173",
-  credentials: true,
-});
+const app = express();
 
-app.use(express.json()).use(cors()).use("/processes", processRouter);
+app
+  .use(cors({ origin: "http://localhost:5173", credentials: true }))
+  .use(express.json());
+
+const server = http.createServer(app);
+
+setupWebSocket(server);
 
 async function startApp() {
   try {
-    app.listen(PORT, () => {
+    server.listen(PORT, () => {
       console.log(`Server is running on http://localhost:${PORT}`);
     });
   } catch (error) {
     console.log(error);
   }
 }
+
 startApp();

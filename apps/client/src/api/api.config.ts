@@ -4,7 +4,7 @@ const API_URL_LIST = {
   apiLogin: `${API_URL}/auth/login/`,
   apiRegister: `${API_URL}/register/`,
 
-  apiGetProcessos: `${API_URL}/processes/`,
+  apiGetProcessosWS: `${API_URL}/`,
 };
 
 export default API_URL_LIST;

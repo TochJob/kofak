@@ -1,14 +1,13 @@
 import API_URL_LIST from "@/api/api.config.ts";
 import type { ProcessosItemType } from "./typos";
 
-const { apiGetProcessos } = API_URL_LIST;
+const { apiGetProcessosWS } = API_URL_LIST;
 
 export class ProcessosList extends HTMLElement {
   constructor() {
     super();
     this.render();
   }
-  private intervalId: number | undefined;
 
   private _state = {
     processosData: null as ProcessosItemType[] | null,
@@ -45,37 +44,33 @@ export class ProcessosList extends HTMLElement {
   }
 
   async connectedCallback() {
-    const fetchAndUpdate = async () => {
+    const socket = new WebSocket(apiGetProcessosWS);
+
+    socket.onmessage = (event) => {
       try {
-        const response = await fetch(apiGetProcessos, {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        });
+        const data = JSON.parse(event.data);
 
-        if (!response.ok) throw new Error("Fetch failed");
+        if (data.type === "processes" && Array.isArray(data.payload)) {
+          const newData: ProcessosItemType[] = data.payload;
 
-        const newData: ProcessosItemType[] = await response.json();
-        if (!Array.isArray(newData)) return;
+          this._state.processosData = newData;
+          const sorted = this.getSortedData(newData);
+          this.updateDOMWithNewData(sorted);
 
-        this._state.processosData = newData;
-        const sorted = this.getSortedData(newData);
-        this.updateDOMWithNewData(sorted);
-
-        this.openTableVisible();
+          this.openTableVisible();
+        }
       } catch (error) {
-        console.error("Fetch error:", error);
-      } finally {
-        this.intervalId = window.setTimeout(fetchAndUpdate, 500);
+        console.error("WebScoket error:", error);
       }
     };
 
-    await fetchAndUpdate();
-  }
+    socket.onerror = (error) => {
+      console.error("WebSocket ошибка:", error);
+    };
 
-  disconnectedCallback() {
-    if (this.intervalId) clearTimeout(this.intervalId);
+    socket.onclose = () => {
+      console.warn("WebSocket connection close");
+    };
   }
 
   private getSortedData(data: ProcessosItemType[]): ProcessosItemType[] {
