@@ -115,7 +115,7 @@ export class ProcessosList extends HTMLElement {
     this.innerHTML = `
       <link rel="stylesheet" href="${stylePath}">
       <div class="main">
-        <h2>Список процессов</h2>
+        <h2 class="page-header">Processes list</h2>
         <div id="table-wrapper" class="hidden">${tableHtml}</div>
         <div class="loader" id="loader"></div>
       </div>

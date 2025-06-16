@@ -123,3 +123,7 @@ button:focus-visible {
 .hidden {
   display: none;
 }
+
+.page-header {
+  text-align: left;
+}
