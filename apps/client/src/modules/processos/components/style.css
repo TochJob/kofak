@@ -1,0 +1,46 @@
+.main {
+  height: 90vh;
+  overflow: hidden;
+}
+
+.processos-table {
+  min-width: 375px;
+  max-height: 75vh;
+  overflow-y: auto;
+  display: block;
+  border-collapse: collapse;
+}
+
+.processos-table__header {
+  background: var(--header-background);
+  color: var(--text-color);
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
+.processos-table__header th {
+  padding: 0.2em 0.5rem;
+  border-radius: 0.5rem 0.5rem 0 0;
+  cursor: pointer;
+  transition: background-color 0.3s ease-in-out;
+}
+.processos-table__header th:hover {
+  background: var(--header-hover-background);
+}
+.processos-table__header th:first-child {
+  text-align: left;
+}
+
+.processos-table__item {
+  background: var(--cell-background);
+  color: var(--text-color);
+  transition: background-color 0.3s ease-in-out;
+}
+.processos-table__item:hover {
+  background: var(--header-hover-background);
+}
+
+.processos-table__item:first-child {
+  text-align: left;
+  padding-left: 0.5rem;
+}

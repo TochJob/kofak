@@ -2,9 +2,10 @@ import { Router } from "express";
 
 import processController from "./processController.ts";
 
+const { getProcesses } = processController;
+
 const router = new Router();
 
-router.get("/", processController.getProcesses);
-router.get("/:pid", processController.getProcess);
+router.get("/", getProcesses);
 
 export default router;

@@ -4,7 +4,8 @@
   "type": "module",
   "main": "index.js",
   "scripts": {
-    "server-start": "cd apps/server && ts-node index.ts"
+    "server-start": "cd apps/server && ts-node index.ts",
+    "client-start": "cd apps/client && npm run dev"
   },
   "dependencies": {
     "bcrypt": "^6.0.0",
@@ -14,8 +15,7 @@
     "jsonwebtoken": "^9.0.2",
     "mongodb": "^6.17.0",
     "mongoose": "^8.15.1",
-    "pidusage": "^4.0.1",
-    "ps-list": "^8.1.1"
+    "systeminformation": "^5.27.1"
   },
   "devDependencies": {
     "nodemo": "^1.0.0",
