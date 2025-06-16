@@ -44,3 +44,7 @@
   text-align: left;
   padding-left: 0.5rem;
 }
+
+#loader {
+  margin: auto;
+}

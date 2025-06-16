@@ -8,7 +8,6 @@ export class ProcessosList extends HTMLElement {
     super();
     this.render();
   }
-
   private intervalId: number | undefined;
 
   private _state = {
@@ -34,10 +33,16 @@ export class ProcessosList extends HTMLElement {
   private state = new Proxy(this._state, {
     set: (target, prop, value) => {
       Reflect.set(target, prop, value);
-      // this.render();
       return true;
     },
   });
+
+  openTableVisible() {
+    const table = document.querySelector("#table-wrapper") as HTMLElement;
+    const loader = document.querySelector("#loader") as HTMLElement;
+    if (table) table.classList.remove("hidden");
+    if (loader) loader.classList.add("hidden");
+  }
 
   async connectedCallback() {
     const fetchAndUpdate = async () => {
@@ -57,6 +62,8 @@ export class ProcessosList extends HTMLElement {
         this._state.processosData = newData;
         const sorted = this.getSortedData(newData);
         this.updateDOMWithNewData(sorted);
+
+        this.openTableVisible();
       } catch (error) {
         console.error("Fetch error:", error);
       } finally {
@@ -109,7 +116,8 @@ export class ProcessosList extends HTMLElement {
       <link rel="stylesheet" href="${stylePath}">
       <div class="main">
         <h2>Список процессов</h2>
-        ${tableHtml}
+        <div id="table-wrapper" class="hidden">${tableHtml}</div>
+        <div class="loader" id="loader"></div>
       </div>
     `;
 
