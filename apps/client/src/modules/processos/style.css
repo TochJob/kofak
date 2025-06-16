@@ -8,7 +8,9 @@
   align-items: center;
   justify-content: space-between;
   padding: 0.5rem;
+  padding-right: 1.5rem;
   gap: 1rem;
+  position: relative;
 }
 
 .processos-table {
@@ -55,4 +57,18 @@
 
 #loader {
   margin: auto;
+}
+
+.check-icon {
+  opacity: 0;
+  transform: scale(0.8);
+  transition: opacity 0.8s ease-out, transform 0.4s ease-out;
+  position: absolute;
+  right: 0;
+  width: 15px;
+}
+
+.check-icon.visible {
+  opacity: 1;
+  transform: scale(1);
 }

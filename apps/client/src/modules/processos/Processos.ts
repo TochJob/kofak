@@ -66,6 +66,14 @@ export class ProcessosList extends HTMLElement {
           })
         );
         localStorage.setItem("processos_interval", String(interval));
+
+        const checkIcon = document.querySelector("#check_icon") as HTMLElement;
+        if (checkIcon) {
+          checkIcon.classList.add("visible");
+          setTimeout(() => {
+            checkIcon.classList.remove("visible");
+          }, 1000);
+        }
       }
     });
 
@@ -141,6 +149,8 @@ export class ProcessosList extends HTMLElement {
 
   private render() {
     const stylePath = new URL("./style.css", import.meta.url).href;
+    const checkIconPath = new URL("@/assets/svg/check.svg", import.meta.url)
+      .href;
 
     const storageInterval = Number(localStorage.getItem("processos_interval"));
     const initialInterval: AvailibleIntervals = this.isAvailibleInterval(
@@ -184,6 +194,7 @@ export class ProcessosList extends HTMLElement {
         <div class="main-header__wrapper">
           <h2 class="page-header">Processes list</h2>
           ${intervalControlHtml}
+          <img src="${checkIconPath}" alt="check icon" class="hidden check-icon" id="check_icon"/>
         </div>
         <div id="table-wrapper" class="hidden">${tableHtml}</div>
         <div class="loader" id="loader"></div>
@@ -204,6 +215,10 @@ export class ProcessosList extends HTMLElement {
         this.updateHeaderSortIndicators();
       });
     });
+
+    setTimeout(() => {
+      document.querySelector(".check-icon")?.classList.remove("hidden");
+    }, 1000);
   }
 
   private updateDOMWithNewData(data: ProcessosItemType[]) {
