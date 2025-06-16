@@ -4,6 +4,11 @@ import type { ProcessosItemType } from "./typos";
 const { apiGetProcessos } = API_URL_LIST;
 
 export class ProcessosList extends HTMLElement {
+  constructor() {
+    super();
+    this.render();
+  }
+
   private intervalId: number | undefined;
 
   private _state = {
@@ -12,15 +17,24 @@ export class ProcessosList extends HTMLElement {
     sortAsc: true,
   };
 
-  constructor() {
-    super();
-    this.render();
+  private updateHeaderSortIndicators() {
+    this.querySelectorAll("th[data-sort]").forEach((th) => {
+      const key = th.getAttribute("data-sort") as keyof ProcessosItemType;
+      const label = th.textContent?.replace(/[\s↑↓]+$/, "") || "";
+
+      if (this._state.sortKey === key) {
+        const arrow = this._state.sortAsc ? "↑" : "↓";
+        th.textContent = `${label} ${arrow}`;
+      } else {
+        th.textContent = label;
+      }
+    });
   }
 
   private state = new Proxy(this._state, {
     set: (target, prop, value) => {
       Reflect.set(target, prop, value);
-      this.render();
+      // this.render();
       return true;
     },
   });
@@ -110,6 +124,7 @@ export class ProcessosList extends HTMLElement {
 
         const sorted = this.getSortedData(this._state.processosData || []);
         this.updateDOMWithNewData(sorted);
+        this.updateHeaderSortIndicators();
       });
     });
   }
