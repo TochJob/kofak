@@ -1,5 +1,5 @@
 import API_URL_LIST from "@/api/api.config.ts";
-import type { ProcessosItemType } from "./typos";
+import type { ProcessosItemType, AvailibleIntervals } from "./typos";
 
 const { apiGetProcessosWS } = API_URL_LIST;
 
@@ -36,6 +36,8 @@ export class ProcessosList extends HTMLElement {
     },
   });
 
+  AVAILIBLE_INTERVALS: AvailibleIntervals[] = [1000, 2000, 5000, 10000];
+
   openTableVisible() {
     const table = document.querySelector("#table-wrapper") as HTMLElement;
     const loader = document.querySelector("#loader") as HTMLElement;
@@ -64,8 +66,15 @@ export class ProcessosList extends HTMLElement {
     });
 
     socket.onopen = () => {
-      const initialInterval =
-        Number(localStorage.getItem("processos_interval")) || 2000;
+      const storageInterval = Number(
+        localStorage.getItem("processos_interval")
+      );
+      const initialInterval: AvailibleIntervals = this.isAvailibleInterval(
+        storageInterval
+      )
+        ? storageInterval
+        : 2000;
+
       socket.send(
         JSON.stringify({
           type: "set_interval",
@@ -129,6 +138,20 @@ export class ProcessosList extends HTMLElement {
   private render() {
     const stylePath = new URL("./style.css", import.meta.url).href;
 
+    const storageInterval = Number(localStorage.getItem("processos_interval"));
+    const initialInterval: AvailibleIntervals = this.isAvailibleInterval(
+      storageInterval
+    )
+      ? storageInterval
+      : 2000;
+
+    const intervalOptionsHtml = this.AVAILIBLE_INTERVALS.map(
+      (sec) =>
+        `<option value="${sec}" ${sec === initialInterval ? "selected" : ""}>${
+          sec / 1000
+        } sec</option>`
+    ).join("");
+
     const tableHtml = `
         <table class="processos-table">
           <thead class="processos-table__header">
@@ -146,10 +169,7 @@ export class ProcessosList extends HTMLElement {
       <label class="update-interval-label">
         Udpdate interval: 
         <select id="interval-selector">
-          <option value="1000">1 sec</option>
-          <option value="2000" selected>2 sec</option>
-          <option value="5000">5 sec</option>
-          <option value="10000">10 sec</option>
+          ${intervalOptionsHtml}
         </select>
       </label>
     `;
@@ -228,6 +248,10 @@ export class ProcessosList extends HTMLElement {
 
       tbody.appendChild(row);
     });
+  }
+
+  isAvailibleInterval(value: number): value is AvailibleIntervals {
+    return [1000, 2000, 5000, 10000].includes(value);
   }
 }
 
