@@ -4,8 +4,8 @@ A full-stack monorepo application built with **Vanilla JavaScript** and **Node.j
 
 ## Requirements
 
-- Node.js ≥ 18
-- npm ≥ 9
+- Node.js ≥ 24.3.0
+- npm ≥ 11.3.0
 
 ### Windows
 
