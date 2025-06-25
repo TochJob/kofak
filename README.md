@@ -23,8 +23,8 @@ npm -v
 ### Linux (Debian/Ubuntu-based):
 
 ```bash
-# Add Node.js 18 LTS repository
-curl -fsSL https://deb.nodesource.com/setup_18.x | sudo -E bash -
+
+curl -fsSL https://deb.nodesource.com/setup_24.x | sudo -E bash -
 
 # Install Node.js and npm
 sudo apt-get install -y nodejs
